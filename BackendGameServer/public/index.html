@@ -11,7 +11,16 @@
     <br>
     <input type="button" id="submit" value="submit" onclick="submit()"/>
 
+    <h1>Controls</h1>
+    <p id="time-view">time: 0</p>
+    <input type="button" id="turn-left-btn" value="TurnLeft" onclick="turnLeft()"/>
+    <input type="button" id="turn-right-btn" value="TurnRight" onclick="turnRight()"/>
+
     <script src="js/socket.io.js"></script>
+    <script src="js/gameLogic.js"></script>
     <script src="js/client.js"></script>
+    <script src="js/handlers/loginHandler.js"></script>
+    <script src="js/handlers/timeHandler.js"></script>
+    <script src="js/handlers/playerHandler.js"></script>
 </body>
 </html>

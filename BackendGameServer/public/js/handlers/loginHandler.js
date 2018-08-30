@@ -1,0 +1,18 @@
+socket.on('login-success', (data) => {
+    console.log('login successful');
+    username = data.username;
+    users = data.users;
+});
+
+socket.on('login-failed', (data) => {
+    console.log('login failed.', data.err);
+});
+
+socket.on('user-connected', (data) => {
+    if (data.username === username) return;
+    addUser(data.username);
+});
+
+socket.on('user-disconnected', (data) => {
+    removeUser(data.username);
+});

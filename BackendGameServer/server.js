@@ -6,7 +6,7 @@ var io = require('socket.io')(server);
 var connectionHandler = require('./messaging/connectionHandler');
 
 app.use(express.static('public'));  
-app.get('/', function(req, res) {  
+app.get('/', (req, res) => {  
     res.sendFile('index.html');
 });
 
@@ -14,4 +14,4 @@ io.on('connection', (socket) => {
     connectionHandler.addConnection(socket, io);
 });
 
-server.listen(4200); 
+server.listen(4200);

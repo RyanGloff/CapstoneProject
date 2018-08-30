@@ -7,25 +7,6 @@ var socket = io();
 var username;
 var users = [];
 
-socket.on('login-success', (data) => {
-    console.log('login successful');
-    username = data.username;
-    users = data.users;
-});
-
-socket.on('login-failed', (data) => {
-    console.log('login failed.', data.err);
-});
-
-socket.on('user-connected', (data) => {
-    if (data.username === username) return;
-    addUser(data.username);
-});
-
-socket.on('user-disconnected', (data) => {
-    removeUser(data.username);
-});
-
 function addUser (username) {
     users.push(username);
 }
@@ -43,4 +24,11 @@ function submit () {
         username: usernameField.value,
         password: passwordField.value
     });
+}
+
+function turnLeft () {
+    socket.emit('player-turn-left', {});
+}
+function turnRight () {
+    socket.emit('player-turn-right', {});
 }

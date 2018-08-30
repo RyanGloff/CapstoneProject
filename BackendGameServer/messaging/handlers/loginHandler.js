@@ -32,7 +32,7 @@ function addHandlers (socket, io, db, game) {
     });
 
     socket.on('disconnect', (data) => {
-        if (socket.username === undefined) return false;
+        if (socket.username === undefined) return;
         console.log('disconnecting');
         game.removeUser(socket.username);
     });
