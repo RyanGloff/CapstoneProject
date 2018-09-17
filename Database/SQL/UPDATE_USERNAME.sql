@@ -1,3 +1,3 @@
-﻿UPDATE public."UserInfo"
-   SET "Username"="Howdy"
- WHERE "ID#" = 1;
+UPDATE public."UserInfo"
+   SET username='testingUpdate'
+ WHERE id = 1;
