@@ -1,0 +1,8 @@
+{
+    "id": 1,
+    "username": "TestingUsername",
+    "password": "TestingPassword",
+    "lastName": "TestingLastName",
+    "firstName": "TestingFirstName",
+    "email": "TestingEmail@email.com"
+}
