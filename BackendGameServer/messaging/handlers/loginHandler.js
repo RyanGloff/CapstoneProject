@@ -18,7 +18,6 @@ function addHandlers (socket, io, db, game) {
                     err: 'Already logged on',
                     data: data
                 });
-                socket.disconnect('Account already logged in');
                 console.log('Duplicate log in attempted.', data.username);
             }
         } else {
@@ -26,7 +25,6 @@ function addHandlers (socket, io, db, game) {
                 err: 'Invalid credentials',
                 data: data
             });
-            socket.disconnect('Unauthorized');
             console.log('Invalid login credentials received.', data);
         }
     });

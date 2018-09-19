@@ -4,6 +4,7 @@ var server = require('http').createServer(app);
 var bodyParser = require('body-parser');
 
 const dbConnector = require('./dbConnector.js');
+const restAuditer = require('./restAuditer.js');
 
 app.use(bodyParser.json());
 
@@ -26,10 +27,14 @@ app.get('/users/:id', (req, res) => {
 
 // POST operations
 app.post('/users', (req, res) => {
+    let auditRes = restAuditer.auditAddUser(req.body);
     let dbRes = dbConnector.addUser(req.body);
-    if (dbRes.success) {
+    if (dbRes.success && auditRes) {
         console.log('POST\t/users\tResponse: 200');
         res.status(200).send({id: dbRes.id});
+    } else if (!auditRes) {
+        console.log('POST\t/users\tResponse: ' + 400);
+        res.status(400).send('Malformed payload');
     } else {
         console.log('POST\t/users\tResponse: ' + dbRes.reason);
         res.sendStatus(dbRes.reason);
