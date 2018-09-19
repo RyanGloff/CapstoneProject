@@ -1,0 +1,1 @@
+\i CREATE_TABLE_UserInfo.sql;
