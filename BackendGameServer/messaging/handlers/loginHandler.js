@@ -1,6 +1,6 @@
 function addHandlers (socket, io, db, game) {
-    socket.on('login', (data) => {
-        if (db.validateUser(data.username, data.password)) {
+    socket.on('login', async function (data) {
+        if (await db.validateUser(data.username, data.password)) {
             if (!game.containsUser(data.username)) {
                 // Login success
                 game.addUser(data.username);
