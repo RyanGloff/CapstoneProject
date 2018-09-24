@@ -1,11 +1,4 @@
-function User (id, username, password, lastName, firstName, email) {
-    this.id = id;
-    this.username = username;
-    this.password = password;
-    this.lastName = lastName;
-    this.fistName = firstName;
-    this.email = email;
-}
+var User = require('./user').User;
 
 var users = [
     new User(1, "RyanUsername", "RyanPassword", "Gloff", "Ryan", "Ryan@email.com"),

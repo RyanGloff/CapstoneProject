@@ -3,6 +3,12 @@ function addHandlers (socket, io, db, game) {
         if (await db.validateUser(data.username, data.password)) {
             if (!game.containsUser(data.username)) {
                 // Login success
+                if (socket.username !== undefined) {
+                    socket.emit('login-failed', {
+                        err: 'Still logged in as someone else',
+                    });
+                    return;
+                }
                 game.addUser(data.username);
                 socket.username = data.username;
                 socket.emit('login-success', {
@@ -29,10 +35,19 @@ function addHandlers (socket, io, db, game) {
         }
     });
 
+    socket.on('log-out', (data) => {
+        if (socket.username === undefined) return;
+        game.removeUser(socket.username);
+        console.log(socket.username, 'logging out');
+        socket.emit('log-out-success', { username: socket.username });
+        socket.username = undefined;
+    });
+
     socket.on('disconnect', (data) => {
         if (socket.username === undefined) return;
         console.log('disconnecting');
         game.removeUser(socket.username);
+        socket.username = undefined;
     });
 }
 

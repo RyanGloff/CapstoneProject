@@ -13,6 +13,11 @@ socket.on('user-connected', (data) => {
     addUser(data.username);
 });
 
+socket.on('log-out-success', (data) => {
+    console.log('logged out');
+    removeUser(data.username);
+})
+
 socket.on('user-disconnected', (data) => {
     removeUser(data.username);
 });
