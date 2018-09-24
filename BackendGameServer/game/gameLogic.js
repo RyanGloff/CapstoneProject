@@ -6,8 +6,8 @@ var THREE = require('three');
 var players = {};
 
 class Player {
-    constructor(geometry, material) {
-        this.sprite = new THREE.Line(geometry, material);
+    constructor() {
+        this.sprite;
         this.dir = -1;
         this.up = false;
     }
@@ -34,11 +34,9 @@ class Player {
     }
 }; 
 
-
-
 function addUser (username) {
     users.push(username);
-    players.username = new Player(geometry, material);
+    players.username = new Player();
 }
 
 function removeUser (username) {
@@ -81,7 +79,7 @@ function start (io) {
             time: time
         });
     }, 1000);
-    run();
+    update();
 }
 
 function end () {
@@ -89,22 +87,12 @@ function end () {
     clock = undefined;
 }
 
-function run () {
-    scene.add(players["test"].sprite);
-    var update = function() {
+function update () {
         var velocity = 1;
         for(var i = 0; i < players.length; i++) {
             players[i].update(velocity);
         }
-        players["test"].update(velocity);
-    };
-    var animate = function () {
-        requestAnimationFrame(animate);
-        update();
-
-        renderer.render(scene, camera);
-    };
-    animate();
+        //players["test"].update(velocity);
 }
 
 exports.addUser = addUser;
@@ -117,3 +105,5 @@ exports.playerTurnRight = playerTurnRight;
 
 exports.start = start;
 exports.end = end;
+exports.players = players;
+exports.Player = Player;

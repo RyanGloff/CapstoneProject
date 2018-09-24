@@ -1,10 +1,11 @@
 const timeView = document.getElementById('time-view');
 
+//three.js setup
 var geometry = new THREE.Geometry();
 var material = new THREE.LineBasicMaterial({color: 0x00ff00});
-geometry.vertices.push(new THREE.Vector3( -4, 0, 0) );
-geometry.vertices.push(new THREE.Vector3( 0, 4, 0) );
-geometry.vertices.push(new THREE.Vector3( 4, 0, 0) );
+geometry.vertices.push(new THREE.Vector3( -1, 0, 0) );
+geometry.vertices.push(new THREE.Vector3( 0, 1, 0) );
+geometry.vertices.push(new THREE.Vector3( 1, 0, 0) );
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -15,13 +16,18 @@ document.body.appendChild(renderer.domElement);
 camera.position.z = 50;
 
 function Game () {
+    this.run = function () {
+        var animate = function () {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        };
+        animate();
+    }
     this.playerTurnLeft = function (username, location) {
         console.log('player-turn-left', username, location);
-        players[username].changeDir("Left");
     };
     this.playerTurnRight = function (username, location) {
         console.log('player-turn-right', username, location);
-        players[username].changeDir("Right");
     };
     this.playerCrashed = function (username, location) {
         console.log('player-crashed', username, location);
@@ -43,7 +49,9 @@ function Game () {
     };
     this.addPlayer = function (name, location, color, direction) {
         console.log('add-player', name, location, color, direction);
-        players.name = new Player(geometry, material);
+        players.name = new Player();
+        players.name.sprite = new THREE.Line(geometry, material);
+        scene.add(players.name.sprite);
 
     };
     this.removePlayer = function (name) {
@@ -52,3 +60,4 @@ function Game () {
 }
 
 var game = new Game();
+game.run();
