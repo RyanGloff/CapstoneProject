@@ -34,7 +34,6 @@ function Game () {
     };
     this.setTime = function (time) {
         timeView.innerHTML = 'time: ' + time;
-        console.log('time', time);
     };
     this.start = function (time) {
         console.log('start the game', time);

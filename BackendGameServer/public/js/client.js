@@ -26,6 +26,10 @@ function submit () {
     });
 }
 
+function logout () {
+    socket.emit('log-out', {});
+}
+
 function turnLeft () {
     socket.emit('player-turn-left', {});
 }

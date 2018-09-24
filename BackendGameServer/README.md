@@ -11,4 +11,5 @@
 ## Running
 - Install all dependencies with `npm install`
 - Run with `node .`
+- Start the choice database server
 - Navigate in a browser to `localhost:4200` to receive main homepage

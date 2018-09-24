@@ -3,7 +3,7 @@ var app = express();
 var server = require('http').createServer(app);
 var bodyParser = require('body-parser');
 
-const dbConnector = require('./dbConnector.js');
+const dbConnector = require('./MemoryBasedDB.js');
 const restAuditer = require('./restAuditer.js');
 
 app.use(bodyParser.json());
