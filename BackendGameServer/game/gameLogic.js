@@ -1,23 +1,23 @@
 const users = [];
 var clock;
 var time = 0;
-var THREE = require('three');
 
 var players = {};
 
 class Player {
     constructor() {
-        this.sprite;
+        this.x = 0;
+        this.y = 0;
         this.dir = -1;
         this.up = false;
     }
 
     update(velocity) {
         if(this.up) {
-            this.sprite.position.y += (this.dir * velocity);
+            this.y += (this.dir * velocity);
         }
         else {
-            this.sprite.position.x += (this.dir * velocity);
+            this.x += (this.dir * velocity);
         }
     }
 
@@ -28,15 +28,12 @@ class Player {
         this.up = !this.up;
         console.log("Turning: " + direction);
     }
-
-    get Sprite() {
-        return this.sprite;
-    }
 }; 
 
 function addUser (username) {
     users.push(username);
     players.username = new Player();
+    console.log("Adding user");
 }
 
 function removeUser (username) {
@@ -72,14 +69,15 @@ function playerTurnRight (username) {
 
 function start (io) {
     if (clock !== undefined) return;
+    players.test = new Player();
     time = 0;
     clock = setInterval(() => {
         time += 1;
         io.emit('heartbeat', {
             time: time
         });
+        update();
     }, 1000);
-    update();
 }
 
 function end () {
@@ -91,8 +89,9 @@ function update () {
         var velocity = 1;
         for(var i = 0; i < players.length; i++) {
             players[i].update(velocity);
+            io.emit('player-set-location', players[i].x, 0);
         }
-        //players["test"].update(velocity);
+        console.log("updating");
 }
 
 exports.addUser = addUser;
@@ -105,5 +104,3 @@ exports.playerTurnRight = playerTurnRight;
 
 exports.start = start;
 exports.end = end;
-exports.players = players;
-exports.Player = Player;

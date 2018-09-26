@@ -49,10 +49,7 @@ function Game () {
     };
     this.addPlayer = function (name, location, color, direction) {
         console.log('add-player', name, location, color, direction);
-        players.name = new Player();
-        players.name.sprite = new THREE.Line(geometry, material);
-        scene.add(players.name.sprite);
-
+        scene.add(new THREE.Line(geometry, material));
     };
     this.removePlayer = function (name) {
         console.log('remove-player', name, location, color, direction);
@@ -60,4 +57,5 @@ function Game () {
 }
 
 var game = new Game();
+//game.addPlayer("test", 0,0,0);
 game.run();
