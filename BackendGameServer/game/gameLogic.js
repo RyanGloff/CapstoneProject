@@ -34,11 +34,10 @@ class Player {
 function addUser (username) {
     users.push(username);
     players[username] = new Player(username);
-    console.log("Adding user");
-    console.log(players.length);
 }
 
 function removeUser (username) {
+    delete players[username];
     for (let i = 0; i < users.length; i += 1) {
         if (users[i] === username) {
             users.splice(i, 1);
@@ -62,11 +61,11 @@ function getUsers () {
 
 function playerTurnLeft (username) {
     console.log(username, 'turned left');
-    players[username].changeDir("Left");
+    players[username].changeDir("left");
 }
 function playerTurnRight (username) {
     console.log(username, 'turned right');
-    players[username].changeDir("Right");
+    players[username].changeDir("right");
 }
 
 function start (io) {
@@ -90,9 +89,8 @@ function update (io) {
         var velocity = 1;
         for(var user in players) {
             var player = players[user];
-            console.log(player.x);
             player.update(velocity);
-            io.emit('player-set-location', player);
+            io.emit('player-set-location', player,user, player.x, player.y, 0);
         }
 }
 

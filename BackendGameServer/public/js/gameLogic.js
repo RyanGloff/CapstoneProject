@@ -15,7 +15,10 @@ document.body.appendChild(renderer.domElement);
 
 camera.position.z = 50;
 
+var sprites = {};
+
 var sprite;
+var user;
 
 function Game () {
     this.run = function () {
@@ -34,9 +37,17 @@ function Game () {
     this.playerCrashed = function (username, location) {
         console.log('player-crashed', username, location);
     };
-    this.setPlayerLocation = function (username) {
-        sprite.x = username.x;
-        sprite.y = username.y;
+    this.setPlayerLocation = function (username, x, y, direction) {
+        if(username in sprites) {
+            sprites[username].position.x = x;
+            sprites[username].position.y = y;
+        }
+        else {
+            sprites[username] = new THREE.Line(geometry, material);
+            sprites[username].position.x = x;
+            sprites[username].position.y = y;
+            scene.add(sprites[username]);
+        }
     };
     this.setPlayerColor = function (username, color) {
         console.log('set-player-color', username, color);
@@ -52,9 +63,8 @@ function Game () {
     };
     //(name, location, color, direction)
     this.addPlayer = function (name) {
-        sprite = new THREE.Line(geometry, material);
-        console.log(typeof(sprite));
-        scene.add(sprite);
+        sprites[name] = new THREE.Line(geometry, material);
+        scene.add(sprites[name]);
     };
     this.removePlayer = function (name) {
         console.log('remove-player', name, location, color, direction);
