@@ -2,6 +2,9 @@ socket.on('login-success', (data) => {
     console.log('login successful');
     username = data.username;
     users = data.users;
+
+    console.log("creating player sprite");
+    game.addPlayer(data.username);
 });
 
 socket.on('login-failed', (data) => {

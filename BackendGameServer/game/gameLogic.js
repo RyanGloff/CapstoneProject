@@ -5,25 +5,26 @@ var time = 0;
 var players = {};
 
 class Player {
-    constructor() {
+    constructor(username) {
         this.x = 0;
         this.y = 0;
-        this.dir = -1;
+        this.direction = 1;
         this.up = false;
+        this.user = username;
     }
 
     update(velocity) {
         if(this.up) {
-            this.y += (this.dir * velocity);
+            this.y += (this.direction * velocity);
         }
         else {
-            this.x += (this.dir * velocity);
+            this.x += (this.direction * velocity);
         }
     }
 
     changeDir(direction) {
         if((direction === "right" && !this.up) || (direction === "left" && this.up)) {
-            this.dir *= -1;
+            this.direction *= -1;
         }
         this.up = !this.up;
         console.log("Turning: " + direction);
@@ -32,8 +33,9 @@ class Player {
 
 function addUser (username) {
     users.push(username);
-    players.username = new Player();
+    players[username] = new Player(username);
     console.log("Adding user");
+    console.log(players.length);
 }
 
 function removeUser (username) {
@@ -69,14 +71,13 @@ function playerTurnRight (username) {
 
 function start (io) {
     if (clock !== undefined) return;
-    players.test = new Player();
     time = 0;
     clock = setInterval(() => {
         time += 1;
         io.emit('heartbeat', {
             time: time
         });
-        update();
+        update(io);
     }, 1000);
 }
 
@@ -85,13 +86,14 @@ function end () {
     clock = undefined;
 }
 
-function update () {
+function update (io) {
         var velocity = 1;
-        for(var i = 0; i < players.length; i++) {
-            players[i].update(velocity);
-            io.emit('player-set-location', players[i].x, 0);
+        for(var user in players) {
+            var player = players[user];
+            console.log(player.x);
+            player.update(velocity);
+            io.emit('player-set-location', player);
         }
-        console.log("updating");
 }
 
 exports.addUser = addUser;
