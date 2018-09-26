@@ -19,6 +19,7 @@ socket.on('user-connected', (data) => {
 socket.on('log-out-success', (data) => {
     console.log('logged out');
     removeUser(data.username);
+    game.removePlayer(data.username);
 })
 
 socket.on('user-disconnected', (data) => {

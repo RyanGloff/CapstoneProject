@@ -67,7 +67,9 @@ function Game () {
         scene.add(sprites[name]);
     };
     this.removePlayer = function (name) {
-        console.log('remove-player', name, location, color, direction);
+        console.log('remove-player', name);
+        scene.remove(sprites[name]);
+        delete sprites[name];
     };
 }
 
