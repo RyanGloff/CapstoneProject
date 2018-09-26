@@ -40,6 +40,7 @@ function addHandlers (socket, io, db, game) {
         game.removeUser(socket.username);
         console.log(socket.username, 'logging out');
         socket.emit('log-out-success', { username: socket.username });
+        io.emit('user-disconnected', {username: socket.username});
         socket.username = undefined;
     });
 
@@ -47,6 +48,7 @@ function addHandlers (socket, io, db, game) {
         if (socket.username === undefined) return;
         console.log('disconnecting');
         game.removeUser(socket.username);
+        io.emit('user-disconnected', {username: socket.username});
         socket.username = undefined;
     });
 }
