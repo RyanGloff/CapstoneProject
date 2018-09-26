@@ -74,5 +74,4 @@ function Game () {
 }
 
 var game = new Game();
-//game.addPlayer("test", 0,0,0);
 game.run();

@@ -24,4 +24,5 @@ socket.on('log-out-success', (data) => {
 
 socket.on('user-disconnected', (data) => {
     removeUser(data.username);
+    game.removePlayer(data.username);
 });
