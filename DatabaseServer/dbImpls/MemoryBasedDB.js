@@ -1,4 +1,4 @@
-var User = require('./user').User;
+var User = require('./../user').User;
 
 var users = [
     new User(1, "RyanUsername", "RyanPassword", "Gloff", "Ryan", "Ryan@email.com"),

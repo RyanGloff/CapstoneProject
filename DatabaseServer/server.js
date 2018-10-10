@@ -10,7 +10,7 @@ commander
   .parse(process.argv);
 
 console.log('Using', commander.connector, 'db implementation');
-const dbConnector = require('./' + commander.connector);
+const dbConnector = require('./dbImpls/' + commander.connector);
 const restAuditer = require('./restAuditer.js');
 
 app.use(bodyParser.json());
