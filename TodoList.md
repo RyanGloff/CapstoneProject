@@ -19,6 +19,5 @@
 
 ## Messaging Layer
 - DB rest api for the game data
-- Separate messaging layer from the logic layer
 - End to end testing for the new messaging layer code
 - Anything that comes up to fit the needs of the connection between the logic layer and the database layer.
