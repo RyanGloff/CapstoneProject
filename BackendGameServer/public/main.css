@@ -8,4 +8,15 @@ canvas {
     height: 100%;
     padding: 15px;
     background: black;
+    position: absolute;
+    z-index: -1;
+}
+
+input {
+    background: grey;
+
+}
+
+#logout-wrapper {
+    display: none;
 }

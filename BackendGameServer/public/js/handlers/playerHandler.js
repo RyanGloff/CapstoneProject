@@ -1,9 +1,6 @@
 // Player Logic
-socket.on('player-turn-left', (data) => {
-    game.playerTurnLeft(data.user, data.location);
-});
-socket.on('player-turn-right', (data) => {
-    game.playerTurnRight(data.user, data.location);
+socket.on('player-turned', (data) => {
+    game.playerTurn(data.user, data.location, data.direction);
 });
 socket.on('player-crashed', (data) => {
     game.playerCrashed(data.user, data.location);

@@ -1,18 +1,33 @@
+const CONSTANTS = require('./../../game/gameConstants');
+
 function addHandlers (socket, io, db, game) {
-    socket.on('player-turn-left', (data) => {
+    socket.on('player-turned', (data) => {
         if (socket.username === undefined) return;
-        game.playerTurnLeft(socket.username);
-        io.emit('player-turn-left', {
+        let direction;
+        switch (data.direction) {
+            case 'UP':
+                direction = CONSTANTS.Direction.UP;
+                break;
+            case 'DOWN':
+                direction = CONSTANTS.Direction.DOWN;
+                break;
+            case 'LEFT': 
+                direction = CONSTANTS.Direction.LEFT;
+                break;
+            case 'RIGHT':
+                direction = CONSTANTS.Direction.RIGHT;
+                break;
+        }
+        if (!CONSTANTS.Direction.validTurn(game.getPlayer(socket.username).direction, direction)) return;
+
+        game.playerTurn(socket.username, direction);
+        io.emit('player-turned', {
             user: socket.username,
-            data: data
-        });
-    });
-    socket.on('player-turn-right', (data) => {
-        if (socket.username === undefined) return;
-        game.playerTurnRight(socket.username);
-        io.emit('player-turn-right', {
-            user: socket.username,
-            data: data
+            location: {
+                x: game.getPlayer(socket.username).x,
+                y: game.getPlayer(socket.username).y
+            },
+            direction: data.direction
         });
     });
 }
