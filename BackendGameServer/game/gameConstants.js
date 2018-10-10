@@ -2,23 +2,28 @@ const TPS = 60;
 const Direction = {
     UP: {
         dx: 0,
-        dy: 1
+        dy: 1,
+        str: 'UP'
     }, 
     RIGHT: {
         dx: 1,
-        dy: 0
+        dy: 0,
+        str: 'RIGHT'
     }, 
     DOWN: {
         dx: 0,
-        dy: -1
+        dy: -1,
+        str: 'DOWN'
     }, 
     LEFT: {
         dx: -1,
-        dy: 0
+        dy: 0,
+        str: 'LEFT'
     },
     NO_DIRECTION: {
         dx: 0,
-        dy: 0
+        dy: 0,
+        str: 'NO_DIRECTION'
     },
     turnRight: function (currentDir) {
         return turnMap[(turnMap.indexOf(currentDir) + 1) % 4];

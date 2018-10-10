@@ -1,5 +1,7 @@
 const CONSTANTS = require('./../../game/gameConstants');
 
+var MessageEmitter = require('./../messageEmitter');
+
 function addHandlers (socket, io, db, game) {
     socket.on('player-turned', (data) => {
         if (socket.username === undefined) return;
@@ -21,14 +23,7 @@ function addHandlers (socket, io, db, game) {
         if (!CONSTANTS.Direction.validTurn(game.getPlayer(socket.username).direction, direction)) return;
 
         game.playerTurn(socket.username, direction);
-        io.emit('player-turned', {
-            user: socket.username,
-            location: {
-                x: game.getPlayer(socket.username).x,
-                y: game.getPlayer(socket.username).y
-            },
-            direction: data.direction
-        });
+        MessageEmitter.sendPlayerTurned(io, socket.username, game.getPlayer(socket.username).x, game.getPlayer(socket.username).y, data.direction);
     });
 }
 

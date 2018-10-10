@@ -1,4 +1,5 @@
 const CONSTANTS = require('./gameConstants');
+var MessageEmitter = require('./../messaging/messageEmitter');
 
 var clock;
 var time = 0;
@@ -52,9 +53,7 @@ function start (io) {
     time = 0;
     clock = setInterval(() => {
         time += 1;
-        io.emit('heartbeat', {
-            time: time
-        });
+        MessageEmitter.sendHeartBeat(io, time);
         update(io);
     }, 1000 / CONSTANTS.TPS);
 }
@@ -69,7 +68,7 @@ function update (io) {
     for(var user in players) {
         var player = players[user];
         player.update(velocity);
-        io.emit('player-set-location', player,user, player.x, player.y, 0);
+        MessageEmitter.sendPlayerMoved(io, player.user, player.x, player.y, player.direction.str);
     }
 }
 
