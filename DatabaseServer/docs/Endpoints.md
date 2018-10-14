@@ -10,7 +10,7 @@ curl http://localhost:8081/users/1
 ```
 - Post new user: 
 ```
-curl -d '{"id": 1, "username": "testUsername", "password": "testPassword", "firstName": "test", "lastName": "testLastname", "email": "test@email.com"}' -H "Content-Type: application/json" -X POST http://localhost:8081/users
+curl -d "{\"id\": 1, \"username\": \"testUsername\", \"password\": \"testPassword\", \"firstName\": \"test\", \"lastName\": \"testLastname\", \"email\": \"test@email.com\"}" -H "Content-Type: application/json" -X POST http://localhost:8081/users
 ```
 - Delete all users: 
 ```
@@ -32,7 +32,7 @@ curl http://localhost:8081/games/1
 ```
 - Post new game: 
 ```
-curl -d '{"id": 3, "startTime": "StartTime", "users": [1, 2, 3, 4], "results": [1, 3, 2, 4], "timeLasted": [100, 75, 80, 10]}' -H "Content-Type: application/json" -X POST http://localhost:8081/games
+curl -d "{\"id\": 3, \"startTime\": \"StartTime\", \"users\": [1, 2, 3, 4], \"results\": [1, 3, 2, 4], \"timeLasted\": [100, 75, 80, 10]}" -H "Content-Type: application/json" -X POST http://localhost:8081/games
 ```
 - Delete all users: 
 ```
