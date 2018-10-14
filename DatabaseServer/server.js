@@ -17,12 +17,12 @@ app.use(bodyParser.json());
 
 // /Users
 // GET operations
-app.get('/users', (req, res) => {
+app.get('/users', async (req, res) => {
     console.log('GET\t/users\tResponse: 200');
-    res.status(200).send(dbConnector.getUsers());
+    res.status(200).send(await dbConnector.getUsers());
 });
-app.get('/users/:id', (req, res) => {
-    let user = dbConnector.getUserById(parseInt(req.params.id));
+app.get('/users/:id', async (req, res) => {
+    let user = await dbConnector.getUserById(parseInt(req.params.id));
     if (user === undefined) {
         console.log('GET\t/users/' + req.params.id + '\tResponse: 404');
         res.sendStatus(404);
@@ -33,9 +33,9 @@ app.get('/users/:id', (req, res) => {
 });
 
 // POST operations
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
     let auditRes = restAuditer.auditAddUser(req.body);
-    let dbRes = dbConnector.addUser(req.body);
+    let dbRes = await dbConnector.addUser(req.body);
     if (dbRes.success && auditRes) {
         console.log('POST\t/users\tResponse: 200');
         res.status(200).send({id: dbRes.id});
@@ -51,28 +51,19 @@ app.post('/users', (req, res) => {
 // DELETE operations
 app.delete('/users', (req, res) => {
     let dbRes = dbConnector.deleteAllUsers();
-    if (dbRes.success) {
-        console.log('DELETE\t/users\tResponse: 200');
-        res.sendStatus(200);
-    } else {
-        console.log('DELETE\t/users\tResponse: 500');
-        res.sendStatus(500);
-    }
+    console.log('DELETE\t/users\tResponse: 200');
+    res.sendStatus(200);
 });
 app.delete('/users/:id', (req, res) => {
     let dbRes = dbConnector.deleteUser(parseInt(req.params.id));
-    if (dbRes.success) {
-        console.log('DELETE\t/users/' + req.params.id + '\tResponse: 200');
-        res.sendStatus(200);
-    } else {
-        console.log('DELETE\t/users/' + req.params.id + '\tResponse: ' + dbRes.reason);
-        res.sendStatus(dbRes.reason);
-    }
+	console.log('DELETE\t/users/' + req.params.id + '\tResponse: 200');
+	res.sendStatus(200);
 });
 
 // /login
-app.post('/login', (req, res) => {
-    let dbRes = dbConnector.areValidCredentials(req.body);
+app.post('/login', async function(req, res) {
+    let dbRes = await dbConnector.areValidCredentials(req.body);
+	console.log(dbRes)
     if (dbRes) {
         console.log('POST\t/login\tResponse: 200');
         res.sendStatus(200);
