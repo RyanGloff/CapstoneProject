@@ -7,4 +7,13 @@ function auditAddUser (user) {
         user.email !== undefined;
 }
 
+function auditAddGame (game) {
+    return game.id !== undefined &&
+        game.startTime !== undefined &&
+        game.users !== undefined &&
+        game.results !== undefined &&
+        game.timeLasted !== undefined;
+}
+
 exports.auditAddUser = auditAddUser;
+exports.auditAddGame = auditAddGame;

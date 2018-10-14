@@ -10,11 +10,15 @@ commander
   .parse(process.argv);
 
 console.log('Using', commander.connector, 'db implementation');
-const dbConnector = require('./' + commander.connector);
+const dbConnector = require('./dbImpls/' + commander.connector);
 const restAuditer = require('./restAuditer.js');
+const usersRouter = require('./routers/usersRouter');
+const gamesRouter = require('./routers/gamesRouter');
+const loginRouter = require('./routers/loginRouter');
 
 app.use(bodyParser.json());
 
+<<<<<<< HEAD
 // /Users
 // GET operations
 app.get('/users', async (req, res) => {
@@ -72,5 +76,10 @@ app.post('/login', async function(req, res) {
         res.sendStatus(401);
     }
 });
+=======
+usersRouter.addEndpoints(app, restAuditer, dbConnector);
+gamesRouter.addEndpoints(app, restAuditer, dbConnector);
+loginRouter.addEndpoints(app, restAuditer, dbConnector);
+>>>>>>> e3608f618d516e35b2a26613db6e42ff32794c2b
 
 server.listen(8081);
