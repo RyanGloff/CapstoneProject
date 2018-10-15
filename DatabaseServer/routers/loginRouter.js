@@ -1,6 +1,6 @@
-function addEndpoints (app, restAuditer, dbConnector) {
-    app.post('/login', (req, res) => {
-        let dbRes = dbConnector.areValidCredentials(req.body);
+async function addEndpoints (app, restAuditer, dbConnector) {
+    app.post('/login', async (req, res) => {
+        let dbRes = await dbConnector.areValidCredentials(req.body);
         if (dbRes) {
             console.log('POST\t/login\tResponse: 200');
             res.sendStatus(200);
