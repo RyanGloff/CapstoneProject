@@ -44,7 +44,7 @@ function createScene() {
 function handleWindowResize() {
     height = window.innerHeight;
     width = window.innerWidth;
-    renderer.setSize(height, width);
+    renderer.setSize(width, height);
     camera.aspect = width/height;
     camera.updateProjectionMatrix();
 }
@@ -122,13 +122,8 @@ Bike = function() {
         }
     }
 }
-//
 
-//function resize () {
-//    renderer.setSize(window.innerWidth, window.innerHeight);
-//}
-//window.addEventListener('resize', resize);
-//resize();
+window.addEventListener('resize', handleWindowResize);
 
 var sprites = {};
 
