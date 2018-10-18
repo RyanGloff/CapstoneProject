@@ -208,7 +208,7 @@ function Game () {
         sprites[name] = player;
     };
     this.removePlayer = function (name) {
-        scene.remove(sprites[name]);
+        scene.remove(sprites[name].mesh);
         delete sprites[name];
     };
 }
