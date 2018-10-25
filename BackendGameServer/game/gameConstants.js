@@ -49,7 +49,7 @@ const Color = {
     GREEN: 'GREEN',
     BLUE: 'BLUE'
 };
-const PLAYER_VELOCITY = 0.1;
+const PLAYER_VELOCITY = 1;
 
 exports.Color = Color;
 exports.Direction = Direction;

@@ -22,7 +22,7 @@ class Player {
     turn(direction) {
         this.direction = direction;
     }
-}; 
+};
 
 function addUser (username) {
     players[username] = new Player(username);

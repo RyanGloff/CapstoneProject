@@ -4,6 +4,8 @@ const canvasWrapper = document.getElementById('canvas-wrapper');
 //three.js setup
 var scene, camera, fov, aspectRatio, nearPlane,
  farPlane, height, width, renderer, container;
+//game mape setup
+var gameMap, leftWall, rightWall, closeWall, farwall;
 
 var gameObjects = [];
 
@@ -80,6 +82,21 @@ GameMap = function(size, x, y, z) {
     this.mesh.position.y = y;
     this.mesh.position.z = z;
 
+    var box = new THREE.Box3().setFromObject(this.mesh);
+    farWall = new Wall(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z - this.size / 2, this.size);
+    closeWall = new Wall(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z + this.size / 2, this.size);
+
+    leftWall = new Wall(this.mesh.position.x - (this.size / 2), this.mesh.position.y, this.mesh.position.z, this.size);
+    rightWall = new Wall(this.mesh.position.x + (this.size / 2), this.mesh.position.y, this.mesh.position.z, this.size);
+    leftWall.mesh.rotation.y += Math.PI / 2;
+    rightWall.mesh.rotation.y += Math.PI / 2;
+
+    scene.add(this.mesh);
+    scene.add(farWall.mesh);
+    scene.add(closeWall.mesh);
+    scene.add(leftWall.mesh);
+    scene.add(rightWall.mesh);
+
     this.mesh.receiveShadow = true;
 }
 
@@ -111,11 +128,6 @@ Bike = function() {
     this.mesh.add(rearWheel);
     this.mesh.add(frontWheel);
 
-    this.update = function() {
-        this.mesh.position.y = 220;
-        this.mesh.position.z--;
-    }
-
     this.setColor = function(clr) {
         for(var i = 0; i < this.mesh.children.length - 1; i++) {
             this.mesh.children[i].material.color.setHex(clr);
@@ -130,43 +142,24 @@ var sprites = {};
 var sprite;
 var user;
 
+
 function Game () {
     this.run = function () {
         createScene();
-
         gameMap = new GameMap(5000,0,0,-100);
-        var box = new THREE.Box3().setFromObject(gameMap.mesh);
-        var farWall = new Wall(gameMap.mesh.position.x, gameMap.mesh.position.y, gameMap.mesh.position.z - gameMap.size / 2, gameMap.size);
-        var closeWall = new Wall(gameMap.mesh.position.x, gameMap.mesh.position.y, gameMap.mesh.position.z + gameMap.size / 2, gameMap.size);
-
-        var leftWall = new Wall(gameMap.mesh.position.x - (gameMap.size / 2), gameMap.mesh.position.y, gameMap.mesh.position.z, gameMap.size);
-        var rightWall = new Wall(gameMap.mesh.position.x + (gameMap.size / 2), gameMap.mesh.position.y, gameMap.mesh.position.z, gameMap.size);
-        leftWall.mesh.rotation.y += Math.PI / 2;
-        rightWall.mesh.rotation.y += Math.PI / 2;
-
-        scene.add(gameMap.mesh);
-        scene.add(farWall.mesh);
-        scene.add(closeWall.mesh);
-        scene.add(leftWall.mesh);
-        scene.add(rightWall.mesh);
-
         camera.position.z += 100;
         camera.position.y += 25;
- 
 
         function animate() {
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
         }
         animate();
-    }
+    };
     this.playerTurn = function (username, location, direction) {
         sprites[username].mesh.position.x = location.x;
         sprites[username].mesh.position.z = location.y;
         sprites[username].mesh.rotation.y += Math.PI / 2;
-        //camera.rotation.y += Math.PI / 2;
-
-        //sprites[username].direction = direction;
     };
     this.playerCrashed = function (username, location) {
         console.log('player-crashed', username, location);
@@ -178,7 +171,6 @@ function Game () {
         }
         else {
             this.addPlayer(username);
-            scene.add(sprites[username]);
         }
     };
     this.setPlayerColor = function (username, color) {
@@ -197,10 +189,10 @@ function Game () {
     //(name, location, color, direction)
     this.addPlayer = function (name) {
         var player = new Bike();
-        player.mesh.add(camera);
         player.mesh.position.y = 100;
         scene.add(player.mesh);
         sprites[name] = player;
+        sprites[name].mesh.add(camera);
     };
     this.removePlayer = function (name) {
         scene.remove(sprites[name].mesh);
