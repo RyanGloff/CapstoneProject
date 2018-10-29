@@ -9,7 +9,7 @@ function auditAddUser (user) {
 
 function auditAddGame (game) {
     return game.id !== undefined &&
-        game.startTime !== undefined &&
+        game.timeStarted !== undefined &&
         game.users !== undefined &&
         game.results !== undefined &&
         game.timeLasted !== undefined;

@@ -1,6 +1,6 @@
-function Game (id, startTime, users, results, timeLasted) {
+function Game (id, timeStarted, users, results, timeLasted) {
     this.id = id;
-    this.startTime = startTime;
+    this.timeStarted = timeStarted;
     this.users = users;
     this.results = results;
     this.timeLasted = timeLasted;
