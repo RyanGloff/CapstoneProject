@@ -14,6 +14,11 @@ function addHandlers (socket, io, db, game) {
                 MessageEmitter.sendLoginSuccess(socket, game.getUsers(), data.username);
                 MessageEmitter.sendUserConnected(io, data.username);
                 console.log('Log in was successful,', data.username);
+                if(Object.keys(game.getUsers()).length === 4) {
+                    setTimeout(() => {
+                        game.start(io);
+                    }, 5000);
+                }
             } else {
                 MessageEmitter.sendLoginFailed(socket, 'Already logger on');
                 console.log('Duplicate log in attempted.', data.username);

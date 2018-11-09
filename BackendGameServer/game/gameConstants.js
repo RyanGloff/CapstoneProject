@@ -1,4 +1,8 @@
 const TPS = 60;
+const mapSize = 5000;
+const playerWidth = 20;
+const playerHeight = 50;
+const PLAYER_VELOCITY = 1;
 const Direction = {
     UP: {
         dx: 0,
@@ -49,9 +53,27 @@ const Color = {
     GREEN: 'GREEN',
     BLUE: 'BLUE'
 };
-const PLAYER_VELOCITY = 1;
+const StartingPositions = [
+    { x: 0,
+      y: (mapSize / 2 - 100),
+      direction: Direction.DOWN,
+      color: Color.YELLOW  },
+    { x: (mapSize / 2 - 100),
+      y: 0,
+      direction: Direction.LEFT,
+      color: Color.RED },
+    { x: 0,
+      y: -(mapSize / 2 - 100),
+      direction: Direction.UP,
+      color: Color.GREEN  },
+    { x: -(mapSize / 2 - 100),
+      y: 0,
+      direction: Direction.RIGHT,
+      color: Color.BLUE  }
+]
 
 exports.Color = Color;
 exports.Direction = Direction;
 exports.TPS = TPS;
 exports.PLAYER_VELOCITY = PLAYER_VELOCITY;
+exports.StartingPositions = StartingPositions;

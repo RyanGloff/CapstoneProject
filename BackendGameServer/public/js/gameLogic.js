@@ -7,7 +7,10 @@ var scene, camera, fov, aspectRatio, nearPlane,
 //game mape setup
 var gameMap, leftWall, rightWall, closeWall, farwall;
 
+var client = username;
+
 var gameObjects = [];
+var sprites = {};
 
 var Colors = {
 	red:0xf25346,
@@ -15,7 +18,18 @@ var Colors = {
 	brown:0x59332e,
 	pink:0xF5986E,
 	brownDark:0x23190f,
-	blue:0x68c3c0,
+    blue:0x68c3c0,
+    'YELLOW': 0xffff00,
+    'RED': 0xf25346,
+    'GREEN': 0x008000,
+    'BLUE': 0x68c3c0
+};
+
+var Directions = {
+    'LEFT': Math.PI / 2,
+    'RIGHT': 3 * Math.PI / 2,
+    'UP':  3 * Math.PI,
+    'DOWN': 0
 };
 
 function createScene() {
@@ -51,20 +65,36 @@ function handleWindowResize() {
     camera.updateProjectionMatrix();
 }
 
-
-Wall = function(x, y, z, width) {
-    var geo = new THREE.PlaneGeometry(width, 100, 32);
+Wall = function(user, x, y, z, width, orientation) {
+    var geo = new THREE.CubeGeometry(width, 75, 10);
     var mat = new THREE.MeshBasicMaterial({
         color: Colors.blue,
-        wireframe: true             
+        side: THREE.DoubleSide,
+      //  wireframe: true
     });
     this.mesh = new THREE.Mesh(geo, mat);
+    this.width = width;
+    this.start = [x, z];
     this.mesh.position.x = x;
     this.mesh.position.y = y;
     this.mesh.position.z = z;
+    this.user = user;
+    if(orientation === 'UP' || orientation === 'DOWN') {
+        this.mesh.rotation.y += Math.PI / 2;
+    }
 
-    this.extend = function() {
-        this.mesh.scale.x++;
+    scene.add(this.mesh);
+
+    this.resize = function(end) {
+        if(this.start[0] != end[0]) {
+            this.mesh.position.x = (this.start[0] + end[0]) / 2;
+        }
+        else if(this.start[1] != end[1]) {
+            this.mesh.position.z = (this.start[1] + end[1]) / 2;
+        }
+        var newWidth = (Math.abs(this.start[0] - end[0])) + (Math.abs(this.start[1] - end[1]));
+       
+        this.mesh.scale.set(newWidth/this.width, 1, 1);
     }
 }
 
@@ -83,11 +113,11 @@ GameMap = function(size, x, y, z) {
     this.mesh.position.z = z;
 
     var box = new THREE.Box3().setFromObject(this.mesh);
-    farWall = new Wall(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z - this.size / 2, this.size);
-    closeWall = new Wall(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z + this.size / 2, this.size);
+    farWall = new Wall("map", this.mesh.position.x, this.mesh.position.y, this.mesh.position.z - this.size / 2, this.size);
+    closeWall = new Wall("map", this.mesh.position.x, this.mesh.position.y, this.mesh.position.z + this.size / 2, this.size);
 
-    leftWall = new Wall(this.mesh.position.x - (this.size / 2), this.mesh.position.y, this.mesh.position.z, this.size);
-    rightWall = new Wall(this.mesh.position.x + (this.size / 2), this.mesh.position.y, this.mesh.position.z, this.size);
+    leftWall = new Wall("map", this.mesh.position.x - (this.size / 2), this.mesh.position.y, this.mesh.position.z, this.size);
+    rightWall = new Wall("map", this.mesh.position.x + (this.size / 2), this.mesh.position.y, this.mesh.position.z, this.size);
     leftWall.mesh.rotation.y += Math.PI / 2;
     rightWall.mesh.rotation.y += Math.PI / 2;
 
@@ -100,8 +130,18 @@ GameMap = function(size, x, y, z) {
     this.mesh.receiveShadow = true;
 }
 
-Bike = function() {
+Bike = function(user, direction, x, y) {
     this.mesh = new THREE.Object3D();
+    this.direction = direction;
+    this.mesh.position.x = x;
+    this.mesh.position.z = y;
+    this.mesh.rotation.y = Directions[direction];
+    this.wall = new Wall(this.user, this.mesh.position.x, this.mesh.position.y, this.mesh.position.z, 0.01, this.direction);
+    console.log(direction);
+
+    if(user === client) {
+        camera.rotation.y = Directions[this.direction];
+    }
 
     var mat = new THREE.MeshBasicMaterial({color: Colors.blue});
     var mat1 = new THREE.MeshBasicMaterial({color: Colors.blue});
@@ -128,6 +168,18 @@ Bike = function() {
     this.mesh.add(rearWheel);
     this.mesh.add(frontWheel);
 
+    scene.add(this.mesh);
+
+    this.setCurrentPosition = function(direction) {
+        this.direction = direction;
+        console.log(direction);
+        this.mesh.rotation.y = Directions[this.direction];
+    }
+
+    this.update = function() {
+        this.wall.resize([this.mesh.position.x, this.mesh.position.z]);
+    }
+
     this.setColor = function(clr) {
         for(var i = 0; i < this.mesh.children.length - 1; i++) {
             this.mesh.children[i].material.color.setHex(clr);
@@ -137,19 +189,14 @@ Bike = function() {
 
 window.addEventListener('resize', handleWindowResize);
 
-var sprites = {};
-
-var sprite;
-var user;
-
-
 function Game () {
     this.run = function () {
         createScene();
-        gameMap = new GameMap(5000,0,0,-100);
-        camera.position.z += 100;
-        camera.position.y += 25;
 
+        gameMap = new GameMap(5000,0,0,-100);
+        camera.position.z += 200;
+        camera.position.y += 50;
+        //camera.rotation.x -= 10;
         function animate() {
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
@@ -159,18 +206,28 @@ function Game () {
     this.playerTurn = function (username, location, direction) {
         sprites[username].mesh.position.x = location.x;
         sprites[username].mesh.position.z = location.y;
-        sprites[username].mesh.rotation.y += Math.PI / 2;
+        sprites[username].setCurrentPosition(direction);
+        if(username === client) {
+            camera.rotation.y = Directions[this.direction];
+        }
+        gameObjects.push(sprites[username].wall);
+        sprites[username].wall = new Wall(username, sprites[username].mesh.position.x, sprites[username].mesh.position.y, sprites[username].mesh.position.z, 1, direction);
     };
     this.playerCrashed = function (username, location) {
         console.log('player-crashed', username, location);
     };
-    this.setPlayerLocation = function (username, x, y, direction) {
+    this.setPlayerLocation = function (username, x, y, direction, color) {
         if(username in sprites) {
             sprites[username].mesh.position.x = x;
             sprites[username].mesh.position.z = y;
+            sprites[username].direction = direction;
+            sprites[username].update();
+            if(username === client) {
+                camera.rotation.y = Directions.direction;
+            }
         }
         else {
-            this.addPlayer(username);
+            this.addPlayer(username, x, y, color, direction);
         }
     };
     this.setPlayerColor = function (username, color) {
@@ -186,17 +243,28 @@ function Game () {
     this.end = function (time) {
         console.log('end the game', time);
     };
-    //(name, location, color, direction)
-    this.addPlayer = function (name) {
-        var player = new Bike();
-        player.mesh.position.y = 100;
-        scene.add(player.mesh);
+    this.addPlayer = function (name, locationx, locationy, color, direction) {
+        var player = new Bike(name, direction, locationx, locationy);
+        player.setColor(Colors[color]);
+        player.mesh.position.y = 25;
         sprites[name] = player;
-        sprites[name].mesh.add(camera);
+        if(name === username) {
+            sprites[name].mesh.add(camera);
+        }
     };
     this.removePlayer = function (name) {
         scene.remove(sprites[name].mesh);
+        scene.remove(sprites[name].wall.mesh);
         delete sprites[name];
+        if(gameObjects.length != 0) {
+            for(var i = gameObjects.length; i >= 0; i--) {
+                if(gameObjects[i].user === name) {
+                    console.log('removing wall');
+                    scene.remove(gameObjects[i].mesh);
+                    gameObjects.splice(i, 1);
+                }
+            }
+        }  
     };
 }
 
