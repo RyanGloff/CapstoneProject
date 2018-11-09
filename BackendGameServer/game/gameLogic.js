@@ -5,24 +5,41 @@ var clock;
 var time = 0;
 
 var players = {};
+var entities = [];
 
 class Player {
     constructor(username) {
-        this.x = 0.0;
-        this.y = 0.0;
-        this.direction = CONSTANTS.Direction.UP;
+        this.playerNum = Object.keys(players).length % 4;
+        this.x = CONSTANTS.StartingPositions[this.playerNum].x;
+        this.y = CONSTANTS.StartingPositions[this.playerNum].y;
+        this.color = CONSTANTS.StartingPositions[this.playerNum].color;
+        this.direction = CONSTANTS.StartingPositions[this.playerNum].direction;
         this.user = username;
+        this.wall = new Wall(this.x, this.y, this.user);
     }
 
     update(velocity) {
         this.x += this.direction.dx * velocity;
         this.y += this.direction.dy * velocity;
+        this.wall.update(this.x, this.y);
     }
 
     turn(direction) {
+        entities.push(this.wall);
         this.direction = direction;
+        this.wall = new Wall(this.x, this.y, this.user);
     }
-}; 
+};
+
+Wall = function(x, y, user) {
+    this.start = [x, y];
+    this.end = start;
+    this.user = user;
+
+    this.update = function(x, y) {
+        this.end = [x, y];
+    }
+}
 
 function addUser (username) {
     players[username] = new Player(username);
@@ -30,6 +47,13 @@ function addUser (username) {
 
 function removeUser (username) {
     delete players[username];
+    if(entities.length != 0) {
+        for(var i = entities.length; i >= 0; i--) {
+            if(entities[i].user === username) {
+                entities.splice(i, 1);
+            }
+        }
+    }
 }
 
 function containsUser (username) {
@@ -45,7 +69,7 @@ function getPlayer (username) {
 }
 
 function playerTurn (username, direction) {
-    players[username].direction = direction;
+    players[username].turn(direction);
 }
 
 function start (io) {
@@ -69,6 +93,29 @@ function update (io) {
         var player = players[user];
         player.update(velocity);
         MessageEmitter.sendPlayerMoved(io, player.user, player.x, player.y, player.direction.str);
+    }
+    if(Object.keys(players).length <= 1) {
+        end();
+    }
+}
+
+function collision (currentPlayer) {
+    for(var user in players) {
+        var player = players[user];
+        if(currentPlayer.user != player.user) {
+            if(currentPlayer.x < player.x + CONSTANTS.playerWidth &&
+                currentPlayer.x + CONSTANTS.playerWidth > player.x &&
+                currentPlayer.y < player.y + CONSTANTS.playerHeight &&
+                currentPlayer.y + CONSTANTS.playerHeight > player.y) {
+                    return true;
+                }
+            if(currentPlayer.x ) {
+                
+            }
+        }
+    }
+    for(var entity in entities) {
+
     }
 }
 

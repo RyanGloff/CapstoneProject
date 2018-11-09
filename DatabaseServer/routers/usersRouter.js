@@ -21,7 +21,6 @@ function addEndpoints (app, restAuditer, dbConnector) {
             res.status(400).send('Malformed payload');
             return;
         }
-        console.log(dbRes);
         if (dbRes.success) {
             console.log('POST\t/users\tResponse: 200');
             res.status(200).send({id: dbRes.id});
@@ -34,7 +33,6 @@ function addEndpoints (app, restAuditer, dbConnector) {
         await dbConnector.deleteAllUsers();
         console.log('DELETE\t/users\tResponse: 200');
         res.sendStatus(200);
-
     });
     app.delete('/users/:id', async (req, res) => {
         await dbConnector.deleteUser(parseInt(req.params.id));

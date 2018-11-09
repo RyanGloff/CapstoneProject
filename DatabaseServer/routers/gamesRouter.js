@@ -1,12 +1,12 @@
 const RestAuditer = require('./../restAuditer');
 
 function addEndpoints (app, restAuditer, dbConnector) {
-    app.get('/games', (req, res) => {
-        let games = dbConnector.getGames();
+    app.get('/games', async (req, res) => {
+        let games = await dbConnector.getGames();
         res.status(200).send(games);
     });
-    app.get('/games/:id', (req, res) => {
-        let game = dbConnector.getGameById(parseInt(req.params.id));
+    app.get('/games/:id', async (req, res) => {
+        let game = await dbConnector.getGameById(parseInt(req.params.id));
         if (game === undefined) {
             console.log('GET\t/games/' + req.params.id + '\tResponse: 404');
             res.sendStatus(404);
@@ -15,9 +15,9 @@ function addEndpoints (app, restAuditer, dbConnector) {
             res.status(200).send(game);
         }
     });
-    app.post('/games', (req, res) => {
+    app.post('/games', async (req, res) => {
         let auditRes = restAuditer.auditAddGame(req.body);
-        let dbRes = dbConnector.addGame(req.body);
+        let dbRes = await dbConnector.addGame(req.body);
         if (dbRes.success && auditRes) {
             console.log('POST\t/games\tResponse: 200');
             res.status(200).send({id: dbRes.id});
@@ -29,8 +29,8 @@ function addEndpoints (app, restAuditer, dbConnector) {
             res.sendStatus(dbRes.reason);
         }
     });
-    app.delete('/games', (req, res) => {
-        let dbRes = dbConnector.deleteAllGames();
+    app.delete('/games', async (req, res) => {
+        let dbRes = await dbConnector.deleteAllGames();
         if (dbRes.success) {
             console.log('DELETE\t/games\tResponse: 200');
             res.sendStatus(200);
@@ -39,8 +39,8 @@ function addEndpoints (app, restAuditer, dbConnector) {
             res.sendStatus(500);
         }
     });
-    app.delete('/games/:id', (req, res) => {
-        let dbRes = dbConnector.deleteGame(parseInt(req.params.id));
+    app.delete('/games/:id', async (req, res) => {
+        let dbRes = await dbConnector.deleteGame(parseInt(req.params.id));
         if (dbRes.success) {
             console.log('DELETE\t/games/' + req.params.id + '\tResponse: 200');
             res.sendStatus(200);
