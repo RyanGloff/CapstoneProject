@@ -135,9 +135,9 @@ Bike = function(user, direction, x, y) {
     this.direction = direction;
     this.mesh.position.x = x;
     this.mesh.position.z = y;
+    this.mesh.position.y = 25;
     this.mesh.rotation.y = Directions[direction];
     this.wall = new Wall(this.user, this.mesh.position.x, this.mesh.position.y, this.mesh.position.z, 0.01, this.direction);
-    console.log(direction);
 
     if(user === client) {
         camera.rotation.y = Directions[this.direction];
@@ -172,7 +172,6 @@ Bike = function(user, direction, x, y) {
 
     this.setCurrentPosition = function(direction) {
         this.direction = direction;
-        console.log(direction);
         this.mesh.rotation.y = Directions[this.direction];
     }
 
@@ -196,7 +195,6 @@ function Game () {
         gameMap = new GameMap(5000,0,0,-100);
         camera.position.z += 200;
         camera.position.y += 50;
-        //camera.rotation.x -= 10;
         function animate() {
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
@@ -211,6 +209,7 @@ function Game () {
             camera.rotation.y = Directions[this.direction];
         }
         gameObjects.push(sprites[username].wall);
+        scene.remove(sprites[username].wall);
         sprites[username].wall = new Wall(username, sprites[username].mesh.position.x, sprites[username].mesh.position.y, sprites[username].mesh.position.z, 1, direction);
     };
     this.playerCrashed = function (username, location) {
@@ -257,7 +256,7 @@ function Game () {
         scene.remove(sprites[name].wall.mesh);
         delete sprites[name];
         if(gameObjects.length != 0) {
-            for(var i = gameObjects.length; i >= 0; i--) {
+            for(var i = gameObjects.length - 1; i >= 0; i--) {
                 if(gameObjects[i].user === name) {
                     console.log('removing wall');
                     scene.remove(gameObjects[i].mesh);

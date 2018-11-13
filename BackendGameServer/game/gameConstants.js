@@ -2,7 +2,7 @@ const TPS = 60;
 const mapSize = 5000;
 const playerWidth = 20;
 const playerHeight = 50;
-const PLAYER_VELOCITY = 1;
+const PLAYER_VELOCITY = 3.5;
 const Direction = {
     UP: {
         dx: 0,
@@ -77,3 +77,6 @@ exports.Direction = Direction;
 exports.TPS = TPS;
 exports.PLAYER_VELOCITY = PLAYER_VELOCITY;
 exports.StartingPositions = StartingPositions;
+exports.playerHeight = playerHeight;
+exports.playerWidth = playerWidth;
+exports.mapSize = mapSize;
