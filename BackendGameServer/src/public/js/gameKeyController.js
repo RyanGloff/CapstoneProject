@@ -1,21 +1,28 @@
+function getTurnDirection (currentDir, turn) {
+    let dirIndex = turnMap.indexOf(currentDir);
+    if (turn === 'LEFT') {
+        dirIndex++;
+    } else if (turn === 'RIGHT') {
+        dirIndex += turnMap.length - 1;
+    }
+    dirIndex %= turnMap.length;
+    return turnMap[dirIndex];
+}
+
 function keyPressed (e) {
     let key = e.keyCode;
+    let newDirection;
     switch (key) {
-        case 87:
-        case 38:
-            MessageEmitter.sendPlayerTurned(socket, 'UP');
-            break;
         case 65:
         case 37:
-            MessageEmitter.sendPlayerTurned(socket, 'LEFT');
-            break;
-        case 83:
-        case 40:
-            MessageEmitter.sendPlayerTurned(socket, 'DOWN');
+        console.log(sprites[username].direction);
+            newDirection = getTurnDirection(sprites[username].direction, 'LEFT');
+            MessageEmitter.sendPlayerTurned(socket, newDirection);
             break;
         case 68:
         case 39:
-            MessageEmitter.sendPlayerTurned(socket, 'RIGHT');
+            newDirection = getTurnDirection(sprites[username].direction, 'RIGHT');
+            MessageEmitter.sendPlayerTurned(socket, newDirection);
             break;
     }
 }
