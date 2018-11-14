@@ -48,7 +48,12 @@ function sendPlayerTurned (con, username, x, y, direction) {
         direction: direction
     });
 }
-
+function sendPlayerColor (con, username, color) {
+    con.emit('login-success', {
+        color: color,
+        user: username
+    });
+}
 // Time control messages
 function sendHeartBeat (con, time) {
     con.emit('heartbeat', {

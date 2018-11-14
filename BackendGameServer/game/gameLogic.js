@@ -48,7 +48,7 @@ function addUser (username) {
 function removeUser (username) {
     delete players[username];
     if(entities.length != 0) {
-        for(var i = entities.length; i >= 0; i--) {
+        for(var i = entities.length - 1; i >= 0; i--) {
             if(entities[i].user === username) {
                 entities.splice(i, 1);
             }
@@ -88,10 +88,14 @@ function end () {
 }
 
 function update (io) {
-    var velocity = CONSTANTS.PLAYER_VELOCITY;
-    for(var user in players) {
-        var player = players[user];
+    let velocity = CONSTANTS.PLAYER_VELOCITY;
+    for(let user in players) {
+        let player = players[user];
         player.update(velocity);
+        let isColliding = collision(player);
+        if(isColliding) {
+            removeUser(player.user);
+        }
         MessageEmitter.sendPlayerMoved(io, player.user, player.x, player.y, player.direction.str);
     }
     if(Object.keys(players).length <= 1) {
@@ -100,23 +104,49 @@ function update (io) {
 }
 
 function collision (currentPlayer) {
-    for(var user in players) {
-        var player = players[user];
+
+    let playerLeft = currentPlayer.x - CONSTANTS.playerWidth / 2;
+    let playerRight = currentPlayer.x + CONSTANTS.playerWidth / 2;
+    let playerBottom = currentPlayer.y - CONSTANTS.playerHeight / 2;
+    let playerTop = currentPlayer.y + CONSTANTS.playerHeight / 2;
+
+    if((currentPlayer.x + CONSTANTS.playerWidth / 2) > (CONSTANTS.mapSize / 2) ||
+    (currentPlayer.x + CONSTANTS.playerWidth / 2) < (-CONSTANTS.mapSize / 2) ||
+    (currentPlayer.y + CONSTANTS.playerHeight / 2) > (CONSTANTS.mapSize / 2) ||
+    (currentPlayer.y + CONSTANTS.playerHeight / 2) < (-CONSTANTS.mapSize / 2)) {
+        return true;
+    }
+    for(let user in players) {
+        let player = players[user];
+        let subjectLeft = player.x - CONSTANTS.playerWidth / 2;
+        let subjectRight = player.x + CONSTANTS.playerWidth / 2;
+        let subjectBottom = player.y - CONSTANTS.playerHeight / 2;
+        let subjectTop = player.y + CONSTANTS.playerHeight / 2;
+
         if(currentPlayer.user != player.user) {
-            if(currentPlayer.x < player.x + CONSTANTS.playerWidth &&
-                currentPlayer.x + CONSTANTS.playerWidth > player.x &&
-                currentPlayer.y < player.y + CONSTANTS.playerHeight &&
-                currentPlayer.y + CONSTANTS.playerHeight > player.y) {
+            if(playerLeft < subjectRight && 
+                playerRight > subjectLeft && 
+                playerBottom < subjectTop && 
+                playerTop > subjectBottom) {
+                return true;
+            }
+            if(playerLeft < player.wall.end[0] &&
+                playerRight > player.wall.start[0] &&
+                playerTop < player.wall.end[1] &&
+                playerBottom > player.wall.start[1]) {
                     return true;
                 }
-            if(currentPlayer.x ) {
-                
-            }
         }
     }
-    for(var entity in entities) {
-
+    for(var i = 0; i < entities.length; i++) {
+        if(playerLeft < entities[i].end[0] &&
+            playerRight > entities[i].start[0] &&
+            playerTop < entities[i].end[1] &&
+            playerBottom > entities[i].start[1]) {
+                return true;
+            }
     }
+    return false;
 }
 
 exports.addUser = addUser;
