@@ -93,6 +93,45 @@ async function areValidCredentials (credentials) {
     return res[0].password === credentials.password;
 }
 
+async function getGames () {
+    const query = 'SELECT id, "timeStarted", users, results, "timeLasted" FROM public."GameInfo";';
+    return await select(query);
+}
+
+async function getGameById (id) {
+    const query = 'SELECT "timeStarted", users, results, "timeLasted" FROM public."GameInfo" WHERE "id" = ' + id + ';';
+    let res = await select(query);
+    return res[0];
+}
+
+async function addGame (game) {
+    let dbUser = await getGameById(game.id);
+    if (dbUser === undefined) {
+        const query = 'INSERT INTO public."GameInfo"("id", "timeStarted", "users", "results", "timeLasted") VALUES (' + game.id + ' , \'' + game.timeStarted + '\' , \'{' + game.users + '}\' , \'{' + game.results + '}\' , \'{' + game.timeLasted + '}\');';
+		await insertInto(query);
+        return {
+            success: true,
+            id: game.id
+        };
+    }
+    return {
+        success: false,
+        reason: 409
+    };
+}
+
+async function deleteGame (id) {
+    const query = 'DELETE FROM public."GameInfo" WHERE "id" = ' + id + ';';
+    await deleteFrom(query);
+	return {success: true};
+}
+
+async function deleteAllGames () {
+    const query = 'DELETE FROM public."GameInfo";';
+    await deleteFrom(query);
+	return {success: true};
+}
+
 exports.getUsers = getUsers;
 exports.getUserById = getUserById;
 exports.addUser = addUser;
@@ -100,3 +139,9 @@ exports.deleteUser = deleteUser;
 exports.deleteAllUsers = deleteAllUsers;
 
 exports.areValidCredentials = areValidCredentials;
+
+exports.getGames = getGames;
+exports.getGameById = getGameById;
+exports.addGame = addGame;
+exports.deleteGame = deleteGame;
+exports.deleteAllGames = deleteAllGames;
