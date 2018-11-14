@@ -5,7 +5,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var connectionHandler = require('./messaging/connectionHandler');
 
-app.use(express.static('public'));
+app.use(express.static('src/public'));
 app.get('/', (req, res) => {
     res.sendFile('index.html');
 });

@@ -1,15 +1,16 @@
 {
-  "name": "backendgameserver",
+  "name": "databaseserver",
   "version": "1.0.0",
-  "description": "- House all messaging layer logic\r - House all game logic\r - House all game related REST endpoints\r - Serve client side webpages\r - Connect to db layer\r - etc",
+  "description": "The purpose of the database microservice is to provide multiple different implementations for the BackendGameServer microservice.",
   "main": "src/server.js",
   "directories": {
     "doc": "docs"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "commander": "^2.19.0",
     "express": "^4.16.4",
-    "socket.io": "^2.1.1"
+    "mongodb": "^3.1.9",
+    "pg": "^7.6.1"
   },
   "devDependencies": {},
   "scripts": {
