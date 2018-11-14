@@ -12,7 +12,6 @@ function addHandlers (socket, io) {
 
 function addConnection (socket, io) {
     addHandlers(socket, io);
-    gameLogic.start(io);
 }
 
 exports.addConnection = addConnection;
