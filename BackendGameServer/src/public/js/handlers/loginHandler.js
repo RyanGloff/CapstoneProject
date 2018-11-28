@@ -3,6 +3,7 @@ socket.on('login-success', (data) => {
     game.addPlayer(data.username, data.users[data.username].x, data.users[data.username].y, data.users[data.username].color, data.users[data.username].direction.str);
     loginDOM.style.display = 'none';
     logoutDOM.style.display = 'block';
+    slideout.close();
 });
 
 socket.on('login-failed', (data) => {
@@ -12,6 +13,7 @@ socket.on('login-failed', (data) => {
 socket.on('logout-success', (data) => {
     loginDOM.style.display = 'block';
     logoutDOM.style.display = 'none';
+    slideout.close();
 })
 
 socket.on('user-disconnected', (data) => {

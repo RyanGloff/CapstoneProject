@@ -10,6 +10,7 @@ function getTurnDirection (currentDir, turn) {
 }
 
 function keyPressed (e) {
+    if (username === undefined) return;
     let key = e.keyCode;
     let newDirection;
     switch (key) {
