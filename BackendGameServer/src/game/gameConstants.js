@@ -55,18 +55,18 @@ const Color = {
 };
 const StartingPositions = [
     { x: 0,
-      y: (mapSize / 2 - 100),
+      y: (mapSize / 2 - 150),
       direction: Direction.DOWN,
       color: Color.YELLOW  },
-    { x: (mapSize / 2 - 100),
+    { x: (mapSize / 2 - 150),
       y: 0,
       direction: Direction.LEFT,
       color: Color.RED },
     { x: 0,
-      y: -(mapSize / 2 - 100),
+      y: -(mapSize / 2 - 150),
       direction: Direction.UP,
       color: Color.GREEN  },
-    { x: -(mapSize / 2 - 100),
+    { x: -(mapSize / 2 - 150),
       y: 0,
       direction: Direction.RIGHT,
       color: Color.BLUE  }

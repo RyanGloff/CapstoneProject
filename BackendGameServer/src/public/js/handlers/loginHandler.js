@@ -1,6 +1,9 @@
 socket.on('login-success', (data) => {
     username = data.username;
-    game.addPlayer(data.username, data.users[data.username].x, data.users[data.username].y, data.users[data.username].color, data.users[data.username].direction.str);
+    for(let key in data.users) {
+        let current = data.users[key];
+        game.addPlayer(current.user, current.x, current.y, current.color, current.direction.str);
+    }
     loginDOM.style.display = 'none';
     logoutDOM.style.display = 'block';
     slideout.close();

@@ -5,7 +5,9 @@ const canvasWrapper = document.getElementById('canvas-wrapper');
 var scene, camera, fov, aspectRatio, nearPlane,
  farPlane, height, width, renderer, container;
 //game mape setup
-var gameMap, leftWall, rightWall, closeWall, farwall;
+var gameMap, leftWall, rightWall, closeWall, farwall, floorTexture;
+//lights
+var hemisphereLight, shadowLight;
 
 var client = username;
 
@@ -31,6 +33,26 @@ var Directions = {
     'UP':  3 * Math.PI,
     'DOWN': 0
 };
+
+function createLights() {
+    hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9);
+
+    shadowLight = new THREE.DirectionalLight(0xffffff, 0.9);
+
+    shadowLight.position.set(0, 350, 0);
+    shadowLight.shadow.camera.left = -400;
+	shadowLight.shadow.camera.right = 400;
+	shadowLight.shadow.camera.top = 400;
+	shadowLight.shadow.camera.bottom = -400;
+	shadowLight.shadow.camera.near = 1;
+    shadowLight.shadow.camera.far = 1000;
+    
+    shadowLight.shadow.mapSize.width = 2048;
+	shadowLight.shadow.mapSize.height = 2048;
+
+    scene.add(hemisphereLight);
+    scene.add(shadowLight);
+}
 
 function createScene() {
     height = window.innerHeight;
@@ -66,8 +88,8 @@ function handleWindowResize() {
 }
 
 Wall = function(user, x, y, z, width, orientation) {
-    var geo = new THREE.CubeGeometry(width, 75, 10);
-    var mat = new THREE.MeshBasicMaterial({
+    var geo = new THREE.BoxGeometry(width, 20, 10);
+    var mat = new THREE.MeshPhongMaterial({
         color: Colors.blue,
         side: THREE.DoubleSide,
       //  wireframe: true
@@ -100,10 +122,15 @@ Wall = function(user, x, y, z, width, orientation) {
 
 GameMap = function(size, x, y, z) {
     this.size = size
+    floorTexture = THREE.ImageUtils.loadTexture("../res/floor.png");
+    floorTexture.wrapS = THREE.RepeatWrapping;
+    floorTexture.wrapT = THREE.RepeatWrapping;
+    floorTexture.repeat.set(this.size / 50, this.size / 50);
     var geo = new THREE.PlaneGeometry(this.size,this.size,700,30,10);
-    var mat = new THREE.MeshBasicMaterial({
-        color: 0xF08080,
-        wireframe: true                            
+    var mat = new THREE.MeshPhongMaterial({
+        color: 0xf25346,
+        side: THREE.DoubleSide,
+        map: floorTexture                          
     });
 
     this.mesh = new THREE.Mesh(geo, mat);
@@ -135,16 +162,16 @@ Bike = function(user, direction, x, y) {
     this.direction = direction;
     this.mesh.position.x = x;
     this.mesh.position.z = y;
-    this.mesh.position.y = 25;
+    this.mesh.position.y = 10;
     this.mesh.rotation.y = Directions[direction];
-    this.wall = new Wall(this.user, this.mesh.position.x, this.mesh.position.y, this.mesh.position.z, 0.01, this.direction);
+    this.wall = new Wall(this.user, this.mesh.position.x, this.mesh.position.y, this.mesh.position.z, 0.001, this.direction);
 
     if(user === client) {
         camera.rotation.y = Directions[this.direction];
     }
 
-    var mat = new THREE.MeshBasicMaterial({color: Colors.blue});
-    var mat1 = new THREE.MeshBasicMaterial({color: Colors.blue});
+    var mat = new THREE.MeshPhongMaterial({color: Colors.blue});
+    var mat1 = new THREE.MeshPhongMaterial({color: Colors.blue});
 
     var bodyGeom = new THREE.BoxGeometry(20, 20, 50);
     var body = new THREE.Mesh(bodyGeom, mat);
@@ -191,10 +218,11 @@ window.addEventListener('resize', handleWindowResize);
 function Game () {
     this.run = function () {
         createScene();
+        createLights();
 
         gameMap = new GameMap(5000,0,0,-100);
-        camera.position.z += 200;
-        camera.position.y += 50;
+        camera.position.z += 250;
+        camera.position.y += 100;
         function animate() {
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
@@ -225,9 +253,6 @@ function Game () {
                 camera.rotation.y = Directions.direction;
             }
         }
-        else {
-            this.addPlayer(username, x, y, color, direction);
-        }
     };
     this.setPlayerColor = function (username, color) {
         console.log('set-player-color', username, color);
@@ -243,12 +268,13 @@ function Game () {
         console.log('end the game', time);
     };
     this.addPlayer = function (name, locationx, locationy, color, direction) {
-        var player = new Bike(name, direction, locationx, locationy);
+        if(!(name in sprites)) {
+            var player = new Bike(name, direction, locationx, locationy);
         player.setColor(Colors[color]);
-        player.mesh.position.y = 25;
         sprites[name] = player;
         if(name === username) {
             sprites[name].mesh.add(camera);
+        }
         }
     };
     this.removePlayer = function (name) {

@@ -46,6 +46,7 @@ function addUser (username) {
 }
 
 function removeUser (username) {
+    delete players[username].wall;
     delete players[username];
     if(entities.length != 0) {
         for(var i = entities.length - 1; i >= 0; i--) {
@@ -92,9 +93,9 @@ function update (io) {
     for(let user in players) {
         let player = players[user];
         player.update(velocity);
-        let isColliding = collision(player);
-        if(isColliding) {
+        if(collision(player)) {
             removeUser(player.user);
+            MessageEmitter.sendUserDisconnected(io, player.user);
         }
         MessageEmitter.sendPlayerMoved(io, player.user, player.x, player.y, player.direction.str);
     }
@@ -116,6 +117,13 @@ function collision (currentPlayer) {
     (currentPlayer.y + CONSTANTS.playerHeight / 2) < (-CONSTANTS.mapSize / 2)) {
         return true;
     }
+    if(playerLeft < currentPlayer.wall.end[0] &&
+        playerRight > currentPlayer.wall.start[0] &&
+        playerTop < currentPlayer.wall.end[1] &&
+        playerBottom > currentPlayer.wall.start[1]) {
+            return true;
+        }
+
     for(let user in players) {
         let player = players[user];
         let subjectLeft = player.x - CONSTANTS.playerWidth / 2;
