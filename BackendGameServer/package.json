@@ -1,18 +1,20 @@
 {
-  "name": "web_game",
+  "name": "backendgameserver",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+  "description": "- House all messaging layer logic\r - House all game logic\r - House all game related REST endpoints\r - Serve client side webpages\r - Connect to db layer\r - etc",
+  "main": "src/server.js",
+  "directories": {
+    "doc": "docs"
   },
-  "author": "Ryan Gloff",
-  "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
-    "express": "^4.16.3",
-    "socket.io": "^2.1.1",
-    "three": "^0.96.0"
-  }
+    "express": "^4.16.4",
+    "socket.io": "^2.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
 }

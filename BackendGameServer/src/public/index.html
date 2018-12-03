@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Game</title>
+    <meta charset=utf-8>
+    <link rel="stylesheet" href="main.css" />
+</head>
+<body>
+    
+    <nav id="menu">
+        <header>
+            <div id="login-wrapper">
+                <input type="text" id="username" placeholder="Username"/>
+                <br>
+                <input type="text" id="password" placeholder="Password"/>
+                <br>
+                <input type="button" id="submit" value="submit" onclick="submit()"/>
+            </div>
+            <div id="logout-wrapper">
+                <input type="button" id="logout-btn" value="Log out" onclick="logout()"/>
+            </div>
+        </header>
+    </nav>
+    <main id="panel">
+        <header id="fixed-header">
+            <div id="canvas-wrapper"></div>
+            <img id="sandwhich-icon" src="res/sandwhich.png"/>
+        </header>
+    </main>
+   
+    <script src ="js/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slideout/1.0.1/slideout.min.js"></script>
+    <script src="js/sidebar.js"></script>>
+    <script src="js/socket.io.js"></script>
+    <script src="js/messageEmitter.js"></script>
+    <script src="js/gameConstants.js"></script>
+    <script src="js/client.js"></script>
+    <script src="js/gameKeyController.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/gameLogic.js"></script>
+    <script src="js/handlers/loginHandler.js"></script>
+    <script src="js/handlers/timeHandler.js"></script>
+    <script src="js/handlers/playerHandler.js"></script>
+</body>
+</html>

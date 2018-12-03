@@ -5,7 +5,11 @@ var users = [
     new User(1, "RyanUsername", "RyanPassword", "Gloff", "Ryan", "Ryan@email.com"),
     new User(2, "NickUsername", "NickPassword", "Kowalchyk", "Nick", "Nick@email.com"),
     new User(3, "AndrewUsername", "AndrewPassword", "Houde", "Andrew", "Andrew@email.com"),
-    new User(4, "RandomUsername", "RandomPassword", "Random", "Random", "Random@email.com")
+    new User(4, "RandomUsername", "RandomPassword", "Random", "Random", "Random@email.com"),
+    new User(5, "1", "", "Testing", "Testing", "testing@email.com"),
+    new User(6, "2", "", "Testing", "Testing", "testing@email.com"),
+    new User(7, "3", "", "Testing", "Testing", "testing@email.com"),
+    new User(8, "4", "", "Testing", "Testing", "testing@email.com"),
 ];
 
 var games = [
