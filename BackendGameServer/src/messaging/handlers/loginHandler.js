@@ -12,7 +12,7 @@ function addHandlers (socket, io, db, game) {
                 game.addUser(data.username);
                 socket.username = data.username;
                 MessageEmitter.sendLoginSuccess(socket, game.getUsers(), data.username);
-                MessageEmitter.sendUserConnected(io, data.username);
+                MessageEmitter.sendUserConnected(io, game.getUsers()[data.username], data.username);
                 console.log('Log in was successful,', data.username);
                 if(Object.keys(game.getUsers()).length === 4) {
                     setTimeout(() => {

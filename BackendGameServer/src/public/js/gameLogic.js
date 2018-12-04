@@ -14,7 +14,7 @@ var client = username;
 var gameObjects = [];
 var sprites = {};
 
-var Colors = {
+const Colors = {
 	red:0xf25346,
 	white:0xd8d0d1,
 	brown:0x59332e,
@@ -27,7 +27,7 @@ var Colors = {
     'BLUE': 0x68c3c0
 };
 
-var Directions = {
+const Directions = {
     'LEFT': Math.PI / 2,
     'RIGHT': 3 * Math.PI / 2,
     'UP':  3 * Math.PI,
@@ -92,8 +92,9 @@ Wall = function(user, x, y, z, width, orientation) {
     var mat = new THREE.MeshPhongMaterial({
         color: Colors.blue,
         side: THREE.DoubleSide,
-      //  wireframe: true
+        transparent: true
     });
+    mat.opacity = 0.3;
     this.mesh = new THREE.Mesh(geo, mat);
     this.width = width;
     this.start = [x, z];
@@ -118,18 +119,22 @@ Wall = function(user, x, y, z, width, orientation) {
        
         this.mesh.scale.set(newWidth/this.width, 1, 1);
     }
+
+    this.setColor = function(clr) {
+        this.mesh.material.color.setHex(clr);
+    }
 }
 
 GameMap = function(size, x, y, z) {
     this.size = size
-    floorTexture = THREE.ImageUtils.loadTexture("../res/floor.png");
+    floorTexture = new THREE.TextureLoader().load("../res/floor.png");
     floorTexture.wrapS = THREE.RepeatWrapping;
     floorTexture.wrapT = THREE.RepeatWrapping;
     floorTexture.repeat.set(this.size / 50, this.size / 50);
     var geo = new THREE.PlaneGeometry(this.size,this.size,700,30,10);
     var mat = new THREE.MeshPhongMaterial({
         color: 0xf25346,
-        side: THREE.DoubleSide,
+        side: THREE.BackSide,
         map: floorTexture                          
     });
 
@@ -164,7 +169,8 @@ Bike = function(user, direction, x, y) {
     this.mesh.position.z = y;
     this.mesh.position.y = 10;
     this.mesh.rotation.y = Directions[direction];
-    this.wall = new Wall(this.user, this.mesh.position.x, this.mesh.position.y, this.mesh.position.z, 0.001, this.direction);
+    this.wall;
+    this.clr = '';
 
     if(user === client) {
         camera.rotation.y = Directions[this.direction];
@@ -210,6 +216,7 @@ Bike = function(user, direction, x, y) {
         for(var i = 0; i < this.mesh.children.length - 1; i++) {
             this.mesh.children[i].material.color.setHex(clr);
         }
+        this.clr = clr;
     }
 }
 
@@ -237,8 +244,10 @@ function Game () {
             camera.rotation.y = Directions[this.direction];
         }
         gameObjects.push(sprites[username].wall);
+        console.log("pushing wall");
         scene.remove(sprites[username].wall);
         sprites[username].wall = new Wall(username, sprites[username].mesh.position.x, sprites[username].mesh.position.y, sprites[username].mesh.position.z, 1, direction);
+        sprites[username].wall.setColor(sprites[username].clr);
     };
     this.playerCrashed = function (username, location) {
         console.log('player-crashed', username, location);
@@ -269,27 +278,29 @@ function Game () {
     };
     this.addPlayer = function (name, locationx, locationy, color, direction) {
         if(!(name in sprites)) {
-            var player = new Bike(name, direction, locationx, locationy);
-        player.setColor(Colors[color]);
-        sprites[name] = player;
-        if(name === username) {
-            sprites[name].mesh.add(camera);
-        }
+            sprites[name] = new Bike(name, direction, locationx, locationy);
+            sprites[name].setColor(Colors[color]);
+            sprites[name].wall = new Wall(name, sprites[name].mesh.position.x, sprites[name].mesh.position.y, sprites[name].mesh.position.z, 1, direction);
+            sprites[name].wall.setColor(Colors[color]);
+            
+            if(name === username) {
+                sprites[name].mesh.add(camera);
+            }
         }
     };
     this.removePlayer = function (name) {
-        scene.remove(sprites[name].mesh);
         scene.remove(sprites[name].wall.mesh);
-        delete sprites[name];
+        scene.remove(sprites[name].mesh);
         if(gameObjects.length != 0) {
             for(var i = gameObjects.length - 1; i >= 0; i--) {
                 if(gameObjects[i].user === name) {
-                    console.log('removing wall');
                     scene.remove(gameObjects[i].mesh);
                     gameObjects.splice(i, 1);
                 }
             }
-        }  
+        }
+        delete sprites[name].wall.mesh;  
+        delete sprites[name];
     };
 }
 

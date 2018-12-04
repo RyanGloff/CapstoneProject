@@ -15,29 +15,29 @@ class Player {
         this.color = CONSTANTS.StartingPositions[this.playerNum].color;
         this.direction = CONSTANTS.StartingPositions[this.playerNum].direction;
         this.user = username;
-        this.wall = new Wall(this.x, this.y, this.user);
+        this.wall = new Wall(this.x, this.y, this.direction.dx, this.direction.dy, this.user);
     }
 
     update(velocity) {
         this.x += this.direction.dx * velocity;
         this.y += this.direction.dy * velocity;
-        this.wall.update(this.x, this.y);
+        this.wall.update(this.x, this.y, this.direction.dx, this.direction.dy);
     }
 
     turn(direction) {
         entities.push(this.wall);
         this.direction = direction;
-        this.wall = new Wall(this.x, this.y, this.user);
+        this.wall = new Wall(this.x, this.y, this.direction.dx, this.direction.dy, this.user);
     }
 };
 
-Wall = function(x, y, user) {
-    this.start = [x, y];
+Wall = function(x, y, dx, dy, user) {
+    this.start = [x + (-dx * (3/4) * CONSTANTS.playerHeight), y + (-dy * (3/4) * CONSTANTS.playerHeight)];
     this.end = start;
     this.user = user;
 
-    this.update = function(x, y) {
-        this.end = [x, y];
+    this.update = function(x, y, dx, dy) {
+        this.end = [x + (-dx * (3/4) * CONSTANTS.playerHeight), y + (-dy * (3/4) * CONSTANTS.playerHeight)];
     }
 }
 
@@ -46,8 +46,10 @@ function addUser (username) {
 }
 
 function removeUser (username) {
-    delete players[username].wall;
-    delete players[username];
+    if(username in players) {
+        delete players[username].wall;
+        delete players[username];
+    }
     if(entities.length != 0) {
         for(var i = entities.length - 1; i >= 0; i--) {
             if(entities[i].user === username) {
@@ -110,19 +112,14 @@ function collision (currentPlayer) {
     let playerRight = currentPlayer.x + CONSTANTS.playerWidth / 2;
     let playerBottom = currentPlayer.y - CONSTANTS.playerHeight / 2;
     let playerTop = currentPlayer.y + CONSTANTS.playerHeight / 2;
-
+    
     if((currentPlayer.x + CONSTANTS.playerWidth / 2) > (CONSTANTS.mapSize / 2) ||
     (currentPlayer.x + CONSTANTS.playerWidth / 2) < (-CONSTANTS.mapSize / 2) ||
     (currentPlayer.y + CONSTANTS.playerHeight / 2) > (CONSTANTS.mapSize / 2) ||
     (currentPlayer.y + CONSTANTS.playerHeight / 2) < (-CONSTANTS.mapSize / 2)) {
+        console.log("off map");
         return true;
     }
-    if(playerLeft < currentPlayer.wall.end[0] &&
-        playerRight > currentPlayer.wall.start[0] &&
-        playerTop < currentPlayer.wall.end[1] &&
-        playerBottom > currentPlayer.wall.start[1]) {
-            return true;
-        }
 
     for(let user in players) {
         let player = players[user];
@@ -138,22 +135,51 @@ function collision (currentPlayer) {
                 playerTop > subjectBottom) {
                 return true;
             }
-            if(playerLeft < player.wall.end[0] &&
-                playerRight > player.wall.start[0] &&
-                playerTop < player.wall.end[1] &&
-                playerBottom > player.wall.start[1]) {
-                    return true;
-                }
-        }
-    }
-    for(var i = 0; i < entities.length; i++) {
-        if(playerLeft < entities[i].end[0] &&
-            playerRight > entities[i].start[0] &&
-            playerTop < entities[i].end[1] &&
-            playerBottom > entities[i].start[1]) {
+            if(playerLineCollision(playerLeft, playerTop, playerRight, playerBottom, player.wall.start[0], player.wall.start[1], player.wall.end[0], player.wall.end[1])) {
                 return true;
             }
+        }
     }
+    for(let i = 0; i < entities.length; i++) {
+        if(playerLineCollision(playerLeft, playerBottom, playerRight, playerTop, entities[i].start[0], entities[i].start[1], entities[i].end[0], entities[i].end[1])) {
+            return true;
+        }
+        //if(boxCollision(playerLeft, playerBottom, playerRight, playerTop, entities[i].start[0] + 0.5, entities[i].start[1] + 0.5, entities[i].end[0] + 0.5, entities[i].end[1] + 0.5)) {
+        //   return true;
+        //}
+    }
+    return false;
+}
+
+function boxCollision(x1, y1, x2, y2, x3, y3, x4, y4) {
+    if(x1 < x4 &&
+        x2 > x3 &&
+        y1 < y4 &&
+        y2 > y3 ) {
+            return true;
+        }
+}
+
+//function from www.jeffreythompson.org
+function lineCollision(x1, y1, x2, y2, x3, y3, x4, y4) {
+    let uA = ((x4-x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) /
+            ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
+
+    let uB = ((x2-x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) /
+            ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
+
+    if(uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+        return true
+    }
+
+    return false;
+}
+
+function playerLineCollision(playerLeft, playerTop, playerRight, playerBottom, x3, y3, x4, y4) {
+    if(lineCollision(playerLeft, playerTop, playerRight, playerTop, x3, y3, x4, y4) || lineCollision(playerLeft, playerBottom, playerRight, playerBottom) ||
+        lineCollision(playerLeft, playerTop, playerLeft, playerBottom) || (lineCollision(playerRight, playerTop, playerRight, playerBottom))) {
+            return true;
+        }
     return false;
 }
 

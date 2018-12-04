@@ -18,9 +18,10 @@ function sendLogoutSuccess (con, username) {
 }
 
 // User add/remove
-function sendUserConnected (con, username) {
+function sendUserConnected (con, user, username) {
     con.emit('user-connected', {
-        username, username
+        user: user,
+        username: username
     });
 }
 function sendUserDisconnected (con, username) {
