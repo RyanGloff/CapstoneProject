@@ -151,34 +151,6 @@ function collision (currentPlayer) {
     return isColliding;
 }
 
-function boxCollision(x1, y1, x2, y2, entity) {
-    let x3, y3, x4, y4;
-    if(entity.start[0] != entity.end[0]) {
-        x3 = entity.start[0];
-        x4 = entity.end[0];
-    }
-    else {
-        x3 = entity.start[0] + CONSTANTS.wallWidth / 2;
-        x4 = entity.end[0] - CONSTANTS.wallWidth / 2;
-    }
-    if(entity.start[1] != entity.end[1]) {
-        y3 = entity.start[1];
-        y4 = entity.end[1];
-    }
-    else {
-        y3 = entity.start[1] + CONSTANTS.wallWidth / 2;
-        y4 = entity.end[1] - CONSTANTS.wallWidth / 2;
-    }
-
-    if(x1 <= x4 &&
-        x2 >= x3 &&
-        y1 <= y4 &&
-        y2 >= y3) {
-            return true;
-        }
-    return false;
-}
-
 function pointCollision(x1, y1, x2, y2, entity) {
     let x3, y3, x4, y4;
     if(entity.start[0] != entity.end[0]) {
