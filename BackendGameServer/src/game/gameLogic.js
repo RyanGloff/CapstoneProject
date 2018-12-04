@@ -15,7 +15,8 @@ class Player {
         this.color = CONSTANTS.StartingPositions[this.playerNum].color;
         this.direction = CONSTANTS.StartingPositions[this.playerNum].direction;
         this.user = username;
-        this.wall = new Wall(this.x, this.y, this.direction.dx, this.direction.dy, this.user);
+        this.wall;
+        this.remove = false;
     }
 
     update(velocity) {
@@ -33,7 +34,7 @@ class Player {
 
 Wall = function(x, y, dx, dy, user) {
     this.start = [x + (-dx * (3/4) * CONSTANTS.playerHeight), y + (-dy * (3/4) * CONSTANTS.playerHeight)];
-    this.end = start;
+    this.end = this.start;
     this.user = user;
 
     this.update = function(x, y, dx, dy) {
@@ -43,6 +44,7 @@ Wall = function(x, y, dx, dy, user) {
 
 function addUser (username) {
     players[username] = new Player(username);
+    players[username].wall = new Wall(players[username].x, players[username].y, players[username].direction.dx, players[username].direction.dy, players[username].user);
 }
 
 function removeUser (username) {
@@ -95,7 +97,8 @@ function update (io) {
     for(let user in players) {
         let player = players[user];
         player.update(velocity);
-        if(collision(player)) {
+        player.remove = collision(player);
+        if(player.remove) {
             removeUser(player.user);
             MessageEmitter.sendUserDisconnected(io, player.user);
         }
@@ -107,7 +110,7 @@ function update (io) {
 }
 
 function collision (currentPlayer) {
-
+    let isColliding = false;
     let playerLeft = currentPlayer.x - CONSTANTS.playerWidth / 2;
     let playerRight = currentPlayer.x + CONSTANTS.playerWidth / 2;
     let playerBottom = currentPlayer.y - CONSTANTS.playerHeight / 2;
@@ -117,8 +120,7 @@ function collision (currentPlayer) {
     (currentPlayer.x + CONSTANTS.playerWidth / 2) < (-CONSTANTS.mapSize / 2) ||
     (currentPlayer.y + CONSTANTS.playerHeight / 2) > (CONSTANTS.mapSize / 2) ||
     (currentPlayer.y + CONSTANTS.playerHeight / 2) < (-CONSTANTS.mapSize / 2)) {
-        console.log("off map");
-        return true;
+        isColliding = true;
     }
 
     for(let user in players) {
@@ -133,54 +135,84 @@ function collision (currentPlayer) {
                 playerRight > subjectLeft && 
                 playerBottom < subjectTop && 
                 playerTop > subjectBottom) {
-                return true;
+                    isColliding = true;
             }
-            if(playerLineCollision(playerLeft, playerTop, playerRight, playerBottom, player.wall.start[0], player.wall.start[1], player.wall.end[0], player.wall.end[1])) {
-                return true;
+            if(pointCollision(playerLeft, playerBottom, playerRight, playerTop, player.wall)) {
+                isColliding = true;
             }
         }
     }
     for(let i = 0; i < entities.length; i++) {
-        if(playerLineCollision(playerLeft, playerBottom, playerRight, playerTop, entities[i].start[0], entities[i].start[1], entities[i].end[0], entities[i].end[1])) {
-            return true;
+        if(pointCollision(playerLeft, playerBottom, playerRight, playerTop, entities[i])) {
+            //console.log("corner collision!");
+            isColliding = true;
         }
-        //if(boxCollision(playerLeft, playerBottom, playerRight, playerTop, entities[i].start[0] + 0.5, entities[i].start[1] + 0.5, entities[i].end[0] + 0.5, entities[i].end[1] + 0.5)) {
-        //   return true;
-        //}
     }
-    return false;
+    return isColliding;
 }
 
-function boxCollision(x1, y1, x2, y2, x3, y3, x4, y4) {
-    if(x1 < x4 &&
-        x2 > x3 &&
-        y1 < y4 &&
-        y2 > y3 ) {
-            return true;
-        }
-}
-
-//function from www.jeffreythompson.org
-function lineCollision(x1, y1, x2, y2, x3, y3, x4, y4) {
-    let uA = ((x4-x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) /
-            ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
-
-    let uB = ((x2-x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) /
-            ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
-
-    if(uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
-        return true
+function boxCollision(x1, y1, x2, y2, entity) {
+    let x3, y3, x4, y4;
+    if(entity.start[0] != entity.end[0]) {
+        x3 = entity.start[0];
+        x4 = entity.end[0];
+    }
+    else {
+        x3 = entity.start[0] + CONSTANTS.wallWidth / 2;
+        x4 = entity.end[0] - CONSTANTS.wallWidth / 2;
+    }
+    if(entity.start[1] != entity.end[1]) {
+        y3 = entity.start[1];
+        y4 = entity.end[1];
+    }
+    else {
+        y3 = entity.start[1] + CONSTANTS.wallWidth / 2;
+        y4 = entity.end[1] - CONSTANTS.wallWidth / 2;
     }
 
-    return false;
-}
-
-function playerLineCollision(playerLeft, playerTop, playerRight, playerBottom, x3, y3, x4, y4) {
-    if(lineCollision(playerLeft, playerTop, playerRight, playerTop, x3, y3, x4, y4) || lineCollision(playerLeft, playerBottom, playerRight, playerBottom) ||
-        lineCollision(playerLeft, playerTop, playerLeft, playerBottom) || (lineCollision(playerRight, playerTop, playerRight, playerBottom))) {
+    if(x1 <= x4 &&
+        x2 >= x3 &&
+        y1 <= y4 &&
+        y2 >= y3) {
             return true;
         }
     return false;
+}
+
+function pointCollision(x1, y1, x2, y2, entity) {
+    let x3, y3, x4, y4;
+    if(entity.start[0] != entity.end[0]) {
+        x3 = entity.start[0];
+        x4 = entity.end[0];
+    }
+    else {
+        x3 = entity.start[0] + CONSTANTS.wallWidth / 2;
+        x4 = entity.end[0] - CONSTANTS.wallWidth / 2;
+    }
+    if(entity.start[1] != entity.end[1]) {
+        y3 = entity.start[1];
+        y4 = entity.end[1];
+    }
+    else {
+        y3 = entity.start[1] + CONSTANTS.wallWidth / 2;
+        y4 = entity.end[1] - CONSTANTS.wallWidth / 2;
+    }
+    //top left corner
+    if (((x1 < x3 && x1 > x4) || (x1 > x3 && x1 < x4)) && ((y1 < y3 && y1 > y4) || (y1 > y4 && y1 < y4))) {
+        return true;
+    }
+    //bottom left corner
+    if (((x1 < x3 && x1 > x4) || (x1 > x3 && x1 < x4)) && ((y2 < y3 && y2 > y4) || (y2 > y3 && y2 < y4))) {
+        return true;
+    }
+    //top right corner
+    if (((x2 < x3 && x2 > x4) || (x2 > x3 && x2 < x4)) && ((y1 < y3 && y1 > y4) || (y1 > y3 && y1 < y4))) {
+        return true;
+    }
+    //bottom right corner
+    if (((x2 < x3 && x2 > x4) || (x2 > x3 && x2 < x4)) && ((y2 < y3 && y2 > y4) || (y2 > y3 && y2 < y4))) {
+        return true;
+    }
 }
 
 exports.addUser = addUser;

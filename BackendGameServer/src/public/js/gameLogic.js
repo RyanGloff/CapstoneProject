@@ -244,7 +244,6 @@ function Game () {
             camera.rotation.y = Directions[this.direction];
         }
         gameObjects.push(sprites[username].wall);
-        console.log("pushing wall");
         scene.remove(sprites[username].wall);
         sprites[username].wall = new Wall(username, sprites[username].mesh.position.x, sprites[username].mesh.position.y, sprites[username].mesh.position.z, 1, direction);
         sprites[username].wall.setColor(sprites[username].clr);
