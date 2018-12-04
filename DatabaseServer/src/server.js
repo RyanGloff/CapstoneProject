@@ -10,8 +10,12 @@ commander
   .parse(process.argv);
 
 console.log('Using', commander.connector, 'db implementation');
-const dbConnector = require('./' + commander.connector);
+const dbConnector = require('./dbImpls/' + commander.connector);
 const restAuditer = require('./restAuditer.js');
+
+const usersRouter = require('./routers/usersRouter');
+const gamesRouter = require('./routers/gamesRouter');
+const loginRouter = require('./routers/loginRouter');
 
 app.use(bodyParser.json());
 
