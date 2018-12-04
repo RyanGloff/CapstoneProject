@@ -2,7 +2,7 @@ const TPS = 60;
 const mapSize = 5000;
 const playerWidth = 20;
 const playerHeight = 50;
-const wallWidth = 5;
+const wallWidth = 2;
 const PLAYER_VELOCITY = 5;
 const Direction = {
     UP: {
